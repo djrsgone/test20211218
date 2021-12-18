@@ -1,0 +1,7 @@
+server:
+  port: 8080
+
+#mybatis的相关配置
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启mybatis的日志实现

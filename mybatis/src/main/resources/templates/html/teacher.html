@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    Hello <span th:text="慕课网"></span>
+    <br>
+    Hello <span th:text="${there}"></span>
+    <br>
+    <br>
+    字符串的长度：<span th:text="${#strings.length(there)}"></span>
+    <br>
+    字符串是否包含ac:<span th:text="${#strings.contains(there, 'ay')}"></span>
+    <br>
+    字符串是否以Ha开头：<span th:text="${#strings.startsWith(there, 'Ha')}"></span>
+    <span ></span>
+
+    <br>
+    <br>
+    默认时间日期：<span th:text="${datevalue}"></span>
+    <br>
+    默认时间格式化<span th:text="${#dates.format(datevalue)}"></span>
+    <br>
+    格式化的时间<span th:text="${#dates.format(datevalue, 'yyyy-MM-dd hh:mm:ss')}"></span>
+
+    <br><br>
+    <span th:if="${sex == 0}">女</span>
+    <span th:if="${sex == 1}">男</span>
+
+    <span th:switch="${sex}">
+        <span th:case="0">女</span>
+        <span th:case="1">男</span>
+        <span th:case="*">未知</span>
+    </span>
+    <br><br>
+
+    <span th:each="str : ${myList}">
+        Element is <span th:text="${str}"></span><br>
+    </span>
+    <br><br>
+
+    <span th:each="attr : ${myMap}">
+        Entry = <span th:text="${attr}"></span><br>
+        Key = <span th:text="${attr.key}"></span><br>
+        Value = <span th:text="${attr.value}"></span><br><br>
+    </span>
+    <br><br>
+
+<!--    <span th:text="${#request.getAttribute('englishName')}"></span><br>-->
+<!--    <span th:text="${#request.getSession().getAttribute('usertoken')}"></span>-->
+
+</body>
+</html>

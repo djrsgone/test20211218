@@ -1,0 +1,60 @@
+#server:
+#  port: 8080
+spring:
+  profiles:
+    active: dev
+  thymeleaf:
+    enabled: true  #开启thymeleaf视图解析
+    encoding: utf-8  #编码
+    prefix: classpath:/templates/html/
+    cache: false  #是否使用缓存
+    mode: HTML  #严格的HTML语法模式
+    suffix: .html
+  #数据库连接配置
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource  #指定数据源的类型HiKariDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/test?characterEncoding=utf-8&useSSL=false
+    username: root
+    password: root
+    # 连接池
+    hikari:
+      #连接池名
+      pool-name: DateHikariCP
+      #最小空闲连接数
+      minimum-idle: 5
+      # 空闲连接存活最大时间，默认600000（10分钟）
+      idle-timeout: 180000
+      # 连接池最大连接数，默认是10
+      maximum-pool-size: 10
+      # 此属性控制从池返回的连接的默认自动提交行为,默认值：true
+      auto-commit: true
+      # 此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟
+      max-lifetime: 1800000
+      # 数据库连接超时时间,默认30秒，即30000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+    servlet:
+      max-file-size: 200KB   #文件上传大小的限制，设置最大值，不能超过，否则报错
+      max-request-size: 2MB  #文件最大请求限制，用于批量
+
+
+#mybatis的相关配置
+mybatis:
+  #mapper配置文件
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.djr.demo.mybatis.pojo
+  #开启驼峰命名
+  configuration:
+    map-underscore-to-camel-case: true
+
+
+#通用mapper配置
+mapper:
+  mappers: com.djr.demo.mybatis.my.mapper.MyMapper  #所有Mapper都需要实现的接口
+  not-empty: false #在进行数据库操作的时候，判断一个属性是否为空的时候，是否需要自动追加是否为空的字符串判断
+  identity: MYSQL
+#分页插件助手的配置
+pagehelper:
+  helper-dialet: mysql
+  support-methods-arguments: true
