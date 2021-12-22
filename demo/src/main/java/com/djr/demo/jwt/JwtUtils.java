@@ -10,10 +10,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import java.util.Calendar;
 import java.util.Date;
 
-/**
- * @author Lehr
- * @create: 2020-02-04
- */
 public class JwtUtils {
 
     public static final String USER_ID = "jwtuserid";

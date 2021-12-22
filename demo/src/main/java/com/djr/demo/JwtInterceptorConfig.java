@@ -5,9 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * @author lehr
- */
 @Configuration
 public class JwtInterceptorConfig implements WebMvcConfigurer {
     @Override

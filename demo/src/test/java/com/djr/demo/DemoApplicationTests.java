@@ -1,7 +1,9 @@
 package com.djr.demo;
 
+import com.alibaba.fastjson.JSON;
 import com.djr.demo.pojo.Account;
 import com.djr.demo.service.AccountService;
+import com.djr.demo.util.JSONResult;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RunWith(SpringRunner.class)
@@ -22,28 +25,38 @@ class DemoApplicationTests {
 	private DataSourceConfiguration dataSourceConfiguration;
 
 	@Test
-	void contextLoads() {
-	}
+	void contextLoads() {}
 
 	@Resource
 	private AccountService accountService;
 
 	@Test
+	void test0_queryAll(){
+		JSONResult jsonResult = accountService.queryAll();
+		Assert.assertTrue(jsonResult.getOk());
+
+		List<Account> accounts = (List<Account>) jsonResult.getData();
+		Assert.assertNotNull(accounts);
+		Assert.assertTrue(accounts.size() >= 1);
+	}
+
+	@Test
 	void test1_1_query_negative(){
-		Account account = accountService.query(-1);
-		Assert.assertNull(account);
+		JSONResult jsonResult = accountService.query(-1);
+		System.out.println(jsonResult);
+		Assert.assertFalse(jsonResult.getOk());
 	}
 
 	@Test
 	void test1_2_query_zero(){
-		Account account = accountService.query(0);
-		Assert.assertNull(account);
+		JSONResult jsonResult = accountService.query(0);
+		Assert.assertFalse(jsonResult.getOk());
 	}
 
 	@Test
 	void test1_3_query_positive(){
-		Account account = accountService.query(1);
-		Assert.assertNotNull(account);
+		JSONResult jsonResult = accountService.query(1);
+		Assert.assertTrue(jsonResult.getOk());
 	}
 
 	@Test
@@ -58,8 +71,8 @@ class DemoApplicationTests {
 		account.setPlace("sd");
 
 		accountService.insert(account);
-		Account result = accountService.query(account.getId());
-		Assert.assertTrue(account.equals(result));
+		JSONResult jsonResult = accountService.query(account.getId());
+		Assert.assertTrue(jsonResult.getOk());
 	}
 
 	@Test
@@ -67,7 +80,8 @@ class DemoApplicationTests {
 		Account account = new Account();
 		account.setId(idGenerator.incrementAndGet());
 
-		Assert.assertTrue(hasInsertError(account));
+		JSONResult jsonResult = this.accountService.insert(account);
+		Assert.assertFalse(jsonResult.getOk());
 	}
 
 	@Test
@@ -75,7 +89,9 @@ class DemoApplicationTests {
 		Account account = new Account();
 		account.setId(idGenerator.incrementAndGet());
 		account.setName("test");
-		Assert.assertTrue(hasInsertError(account));
+
+		JSONResult jsonResult = this.accountService.insert(account);
+		Assert.assertFalse(jsonResult.getOk());
 	}
 
 	@Test
@@ -86,8 +102,8 @@ class DemoApplicationTests {
 		account.setPassword("");
 
 		accountService.insert(account);
-		Account result = accountService.query(account.getId());
-		Assert.assertTrue(account.equals(result));
+		JSONResult jsonResult = accountService.query(account.getId());
+		Assert.assertTrue(account.equals(jsonResult.getData()));
 	}
 
 	@Test
@@ -97,7 +113,8 @@ class DemoApplicationTests {
 		account.setName(buildString(256));
 		account.setPassword("");
 
-		Assert.assertTrue(hasInsertError(account));
+		JSONResult jsonResult = this.accountService.insert(account);
+		Assert.assertFalse(jsonResult.getOk());
 	}
 
 	@Test
@@ -107,7 +124,8 @@ class DemoApplicationTests {
 		account.setName("");
 		account.setPassword(buildString(21));
 
-		Assert.assertTrue(hasInsertError(account));
+		JSONResult jsonResult = this.accountService.insert(account);
+		Assert.assertFalse(jsonResult.getOk());
 	}
 
 	@Test
@@ -118,7 +136,8 @@ class DemoApplicationTests {
 		account.setPassword("");
 		account.setBirthDate(buildString(256));
 
-		Assert.assertTrue(hasInsertError(account));
+		JSONResult jsonResult = this.accountService.insert(account);
+		Assert.assertFalse(jsonResult.getOk());
 	}
 
 	@Test
@@ -130,7 +149,8 @@ class DemoApplicationTests {
 		account.setBirthDate("");
 		account.setPlace(buildString(256));
 
-		Assert.assertTrue(hasInsertError(account));
+		JSONResult jsonResult = this.accountService.insert(account);
+		Assert.assertFalse(jsonResult.getOk());
 	}
 
 	@Test
@@ -143,7 +163,8 @@ class DemoApplicationTests {
 		account.setPlace("");
 		account.setMobile(buildString(256));
 
-		Assert.assertTrue(hasInsertError(account));
+		JSONResult jsonResult = this.accountService.insert(account);
+		Assert.assertFalse(jsonResult.getOk());
 	}
 
 	@Test
@@ -157,8 +178,8 @@ class DemoApplicationTests {
 		account.setMobile("手机");
 
 		accountService.insert(account);
-		Account result = accountService.query(account.getId());
-		Assert.assertTrue(account.equals(result));
+		JSONResult jsonResult = accountService.query(account.getId());
+		Assert.assertTrue(account.equals(jsonResult.getData()));
 	}
 
 	@Test
@@ -172,8 +193,8 @@ class DemoApplicationTests {
 		account.setMobile("!@#$%^&*()_+{}|:'\"<>?\\-=[];',./'");
 
 		accountService.insert(account);
-		Account result = accountService.query(account.getId());
-		Assert.assertTrue(account.equals(result));
+		JSONResult jsonResult = accountService.query(account.getId());
+		Assert.assertTrue(account.equals(jsonResult.getData()));
 	}
 
 	@Test
@@ -187,9 +208,26 @@ class DemoApplicationTests {
 		account.setMobile("!@#$%^&*()_+{}|:'\"<>?\\-=[];',./'");
 
 		accountService.insert(account);
-		Account result = accountService.query(account.getId());
-		Assert.assertTrue(account.equals(result));
+		JSONResult jsonResult = accountService.query(account.getId());
+		Assert.assertTrue(account.equals(jsonResult.getData()));
 	}
+
+	@Test
+	void test2_12_insert_duplicate(){
+		Account account = new Account();
+		account.setId(1);
+		account.setName("123");
+		account.setBirthDate("birth");
+		account.setGender(1);
+		account.setPassword("123");
+		account.setMobile("m1");
+		account.setPlace("sd");
+
+		accountService.insert(account);
+		JSONResult jsonResult = accountService.query(account.getId());
+		Assert.assertTrue(jsonResult.getOk());
+	}
+
 
 	@Test
 	public void test3_1_delete_existing(){
@@ -202,8 +240,8 @@ class DemoApplicationTests {
 		Assert.assertNotNull(accountService.query(id));
 
 		accountService.delete(id);
-		Account result = accountService.query(id);
-		Assert.assertNull(result);
+		JSONResult jsonResult = accountService.query(id);
+		Assert.assertFalse(jsonResult.getOk());
 	}
 
 	@Test
@@ -223,7 +261,8 @@ class DemoApplicationTests {
 		account.setMobile("m1");
 		account.setPlace("sd");
 
-		Assert.assertFalse(hasUpdateError(account));
+		JSONResult jsonResult = this.accountService.update(account);
+		Assert.assertTrue(jsonResult.getOk());
 	}
 
 	@Test
@@ -231,7 +270,8 @@ class DemoApplicationTests {
 		Account account = new Account();
 		account.setId(1);
 
-		Assert.assertTrue(hasUpdateError(account));
+		JSONResult jsonResult = this.accountService.update(account);
+		Assert.assertFalse(jsonResult.getOk());
 	}
 
 	@Test
@@ -239,7 +279,9 @@ class DemoApplicationTests {
 		Account account = new Account();
 		account.setId(1);
 		account.setName("test");
-		Assert.assertTrue(hasUpdateError(account));
+
+		JSONResult jsonResult = this.accountService.update(account);
+		Assert.assertFalse(jsonResult.getOk());
 	}
 
 	@Test
@@ -249,7 +291,8 @@ class DemoApplicationTests {
 		account.setName("");
 		account.setPassword("");
 
-		Assert.assertFalse(hasUpdateError(account));
+		JSONResult jsonResult = this.accountService.update(account);
+		Assert.assertTrue(jsonResult.getOk());
 	}
 
 	@Test
@@ -259,7 +302,8 @@ class DemoApplicationTests {
 		account.setName(buildString(256));
 		account.setPassword("");
 
-		Assert.assertTrue(hasUpdateError(account));
+		JSONResult jsonResult = this.accountService.update(account);
+		Assert.assertFalse(jsonResult.getOk());
 	}
 
 	@Test
@@ -269,7 +313,8 @@ class DemoApplicationTests {
 		account.setName("");
 		account.setPassword(buildString(21));
 
-		Assert.assertTrue(hasUpdateError(account));
+		JSONResult jsonResult = this.accountService.update(account);
+		Assert.assertFalse(jsonResult.getOk());
 	}
 
 	@Test
@@ -280,7 +325,8 @@ class DemoApplicationTests {
 		account.setPassword("");
 		account.setBirthDate(buildString(256));
 
-		Assert.assertTrue(hasUpdateError(account));
+		JSONResult jsonResult = this.accountService.update(account);
+		Assert.assertFalse(jsonResult.getOk());
 	}
 
 	@Test
@@ -292,7 +338,8 @@ class DemoApplicationTests {
 		account.setBirthDate("");
 		account.setPlace(buildString(256));
 
-		Assert.assertTrue(hasUpdateError(account));
+		JSONResult jsonResult = this.accountService.update(account);
+		Assert.assertFalse(jsonResult.getOk());
 	}
 
 	@Test
@@ -305,7 +352,8 @@ class DemoApplicationTests {
 		account.setPlace("");
 		account.setMobile(buildString(256));
 
-		Assert.assertTrue(hasUpdateError(account));
+		JSONResult jsonResult = this.accountService.update(account);
+		Assert.assertFalse(jsonResult.getOk());
 	}
 
 	@Test
@@ -318,7 +366,8 @@ class DemoApplicationTests {
 		account.setPlace("中国");
 		account.setMobile("手机");
 
-		Assert.assertFalse(hasUpdateError(account));
+		JSONResult jsonResult = this.accountService.update(account);
+		Assert.assertTrue(account.equals(jsonResult.getData()));
 	}
 
 	@Test
@@ -331,7 +380,8 @@ class DemoApplicationTests {
 		account.setPlace("!@#$%^&*()_+{}|:'\"<>?\\-=[];',./'");
 		account.setMobile("!@#$%^&*()_+{}|:'\"<>?\\-=[];',./'");
 
-		Assert.assertFalse(hasUpdateError(account));
+		JSONResult jsonResult = this.accountService.update(account);
+		Assert.assertTrue(account.equals(jsonResult.getData()));
 	}
 
 	@Test
@@ -344,30 +394,51 @@ class DemoApplicationTests {
 		account.setPlace("!@#$%^&*()_+{}|:'\"<>?\\-=[];',./'");
 		account.setMobile("!@#$%^&*()_+{}|:'\"<>?\\-=[];',./'");
 
-		Assert.assertFalse(hasUpdateError(account));
+		JSONResult jsonResult = this.accountService.update(account);
+		Assert.assertTrue(account.equals(jsonResult.getData()));
 	}
 
-	private boolean hasInsertError(Account account){
-		boolean error = false;
-		try
-		{
-			accountService.insert(account);
-		}catch (Exception e){
-			error = true;
-		}
-		return error;
+	@Test
+	public void test4_12_update_unexisting(){
+		Account account = new Account();
+		account.setId(10000000);
+		account.setName("!@#$%^&*()_+{}|:'\"<>?\\-=[];',./'");
+		account.setPassword("}|:'\"<>?\\-=[];',./'");
+		account.setBirthDate("日期");
+		account.setPlace("!@#$%^&*()_+{}|:'\"<>?\\-=[];',./'");
+		account.setMobile("!@#$%^&*()_+{}|:'\"<>?\\-=[];',./'");
+
+		JSONResult jsonResult = this.accountService.update(account);
+		Assert.assertTrue(account.equals(jsonResult.getData()));
 	}
 
-	private boolean hasUpdateError(Account account){
-		boolean error = false;
-		try
-		{
-			accountService.update(account);
-		}catch (Exception e){
-			error = true;
-		}
-		return error;
+	@Test
+	public void test4_13_update_null(){
+		JSONResult jsonResult = this.accountService.update(null);
+		Assert.assertFalse(jsonResult.getOk());
 	}
+
+//	private boolean hasInsertError(Account account){
+//		boolean error = false;
+//		try
+//		{
+//			accountService.insert(account);
+//		}catch (Exception e){
+//			error = true;
+//		}
+//		return error;
+//	}
+
+//	private boolean hasUpdateError(Account account){
+//		boolean error = false;
+//		try
+//		{
+//			accountService.update(account);
+//		}catch (Exception e){
+//			error = true;
+//		}
+//		return error;
+//	}
 
 	private static String buildString(int length){
 		StringBuffer buffer = new StringBuffer();
@@ -377,5 +448,4 @@ class DemoApplicationTests {
 		}
 		return buffer.toString();
 	}
-
 }
