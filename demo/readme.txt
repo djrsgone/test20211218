@@ -2,7 +2,7 @@
 Request API:
 	http://localhost:8080/login?userName=jwtusername&password=jwtpassword
 Request METHOD:
-    HTTP GET METHOD
+        HTTP GET METHOD
 API Response Format:
 	{
     "error": null,
@@ -21,7 +21,7 @@ Request Requirement:
      (1) put the key-value in the request header
 	     key：token
 	     value: jwt token responsed in step1's [data]field
-	 (2) set Content-Type as 'application/json' in the request header
+     (2) set Content-Type as 'application/json' in the request header
 API Response Format:
     {
     "error": null,
@@ -48,7 +48,7 @@ Request Requirement:
      (1) put the key-value in the request header
 	     key：token
 	     value: jwt token responsed in step1's [data]field
-	 (2) set Content-Type as 'application/json' in the request header
+     (2) set Content-Type as 'application/json' in the request header
 API Response Format:
     {
     "error": null,
@@ -86,7 +86,7 @@ Request Requirement:
      (1) put the key-value in the request header
 	     key：token
 	     value: jwt token responsed in step1's [data]field
-	 (2) set Content-Type as 'application/json' in the request header
+     (2) set Content-Type as 'application/json' in the request header
 API Response Format:
 	{
 		"error": null,
@@ -112,7 +112,7 @@ Request Requirement:
      (1) put the key-value in the request header
 	     key：token
 	     value: jwt token responsed in step1's [data]field
-	 (2) set Content-Type as 'application/json' in the request header
+     (2) set Content-Type as 'application/json' in the request header
 API Response Format:
 	{
 		"error": null,
